@@ -2,12 +2,26 @@
 import { getAllEpisodes } from "./episodes.js";
 function setup() {
   const allEpisodes = getAllEpisodes();
+  console.log(allEpisodes);
   makePageForEpisodes(allEpisodes);
+
+  const searchInput = document.getElementById('search');
+  searchInput.addEventListener('input', (event) => {
+    const searchText = event.target.value.toLowerCase();
+    const filteredEpisodes = allEpisodes.filter(episode => 
+      episode.name.toLowerCase().includes(searchText) ||
+      episode.summary.toLowerCase().includes(searchText));
+
+    makePageForEpisodes(filteredEpisodes);
+  })
 }
+
+
+
 function makePageForEpisodes(episodeList) {
   const rootElem = document.getElementById("root");
   rootElem.innerHTML = '';
-  for (let i = 0; i <episodeList.length; i++)
+  for (let i = 0; i < episodeList.length; i++)
      {const episodeContainer = document.createElement('section');
       episodeContainer.classList.add('episode'); 
       const title=document.createElement('h3');
@@ -22,6 +36,7 @@ function makePageForEpisodes(episodeList) {
       summary.innerHTML = episodeList[i].summary || '';
       summary.classList.add('summary'); 
       episodeContainer.append(title,image,summary);
+
       rootElem.append(episodeContainer);
      }
 }
