@@ -1,10 +1,25 @@
 //You can edit ALL of the code here
 import { getAllEpisodes } from "./episodes.js";
+
+
 function setup() {
   const allEpisodes = getAllEpisodes();
-  console.log(allEpisodes);
   makePageForEpisodes(allEpisodes);
+  const epNum = document.createElement('p');
+  epNum.classList.add('episode-number');
+  epNum.innerHTML = `Displaying ${allEpisodes.length}/${allEpisodes.length}`;
+  filter.append(epNum);
 
+  search(allEpisodes, epNum);
+  //select(allEpisodes, epNum);
+
+}
+
+
+// search episode
+function search(allEpisodes, epNum) {
+  const showButton = filter.querySelector('button')
+  if(showButton !== null) showButton.remove();
   const searchInput = document.getElementById('search');
   searchInput.addEventListener('input', (event) => {
     const searchText = event.target.value.toLowerCase();
@@ -13,10 +28,11 @@ function setup() {
       episode.summary.toLowerCase().includes(searchText));
 
     makePageForEpisodes(filteredEpisodes);
+    epNum.innerHTML = `Displaying ${filteredEpisodes.length}/${allEpisodes.length}`;
+    const filter = document.getElementById('filter');
+    filter.append(epNum);
   })
 }
-
-
 
 function makePageForEpisodes(episodeList) {
   const rootElem = document.getElementById("root");
@@ -38,6 +54,7 @@ function makePageForEpisodes(episodeList) {
       episodeContainer.append(title,image,summary);
 
       rootElem.append(episodeContainer);
+
      }
 }
 
