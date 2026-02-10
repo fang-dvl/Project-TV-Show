@@ -5,6 +5,7 @@ import { getAllEpisodes } from "./episodes.js";
 function setup() {
   const allEpisodes = getAllEpisodes();
   makePageForEpisodes(allEpisodes);
+  const filter = document.getElementById('filter');
   const epNum = document.createElement('p');
   epNum.classList.add('episode-number');
   epNum.innerHTML = `Displaying ${allEpisodes.length}/${allEpisodes.length}`;
