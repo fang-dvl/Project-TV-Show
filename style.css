@@ -29,4 +29,10 @@
 
 .episode-number {
   display: inline-block;
+footer {
+  text-align: center;
+}
+
+.episode-number {
+  display: inline;
 }
