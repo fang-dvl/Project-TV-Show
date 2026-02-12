@@ -28,3 +28,7 @@
 footer {
   text-align: center;
 }
+
+.episode-number {
+  display: inline;
+}
