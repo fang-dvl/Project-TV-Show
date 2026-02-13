@@ -1,20 +1,34 @@
 //You can edit ALL of the code here
-import { getAllEpisodes } from "./episodes.js";
+const rootElem = document.getElementById("root");
+function showLoading() {
+  rootElem.innerHTML = "<p>Loading episodes, please wait...</p>";
+}
+showLoading()
 
+function showError(message) {
+  rootElem.innerHTML = `<p style="color:red;">Error: ${message}</p>`;
+}
 
-function setup() {
-  const allEpisodes = getAllEpisodes();
+fetch("https://api.tvmaze.com/shows/82/episodes").then(response=>{
+  if (!response.ok) {throw new Error("Network response was not OK");}
+  return response.json()}).then((allEpisodes)=>{
+  rootElem.innerHTML = "";
+  setup(allEpisodes)
+}).catch(error => {
+    showError(error.message);})
+
+function setup(allEpisodes) {
   makePageForEpisodes(allEpisodes);
-
   const filter = document.getElementById('filter');
   const epNum = document.createElement('p');
   epNum.classList.add('episode-number');
   epNum.innerHTML = `Displaying ${allEpisodes.length}/${allEpisodes.length}`;
   filter.append(epNum);
-
+  
   search(allEpisodes, epNum);
+  select(allEpisodes, epNum);
   //select(allEpisodes, epNum);
-
+  
 }
 
 
@@ -30,15 +44,14 @@ function search(allEpisodes, epNum) {
       episode.summary.toLowerCase().includes(searchText));
 
     makePageForEpisodes(filteredEpisodes);
-    epNum.innerHTML = `Displaying ${filteredEpisodes.length}/${allEpisodes.length}`;
     const filter = document.getElementById('filter');
+    epNum.innerHTML = `Displaying ${filteredEpisodes.length}/${allEpisodes.length}`;
     filter.append(epNum);
   })
 }
 
-  select(allEpisodes, epNum);
+ 
 
-}
 
 // select episodes
 function select(allEpisodes, epNum) {
@@ -85,7 +98,6 @@ function showAll(allEpisodes, epNum) {
 }
 
 function makePageForEpisodes(episodeList) {
-  const rootElem = document.getElementById("root");
   rootElem.innerHTML = '';
   for (let i = 0; i < episodeList.length; i++)
      {const episodeContainer = document.createElement('section');
@@ -108,4 +120,3 @@ function makePageForEpisodes(episodeList) {
      }
 }
 
-window.onload = setup;
