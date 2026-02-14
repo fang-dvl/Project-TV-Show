@@ -25,6 +25,15 @@
    text-align: center;
    padding: 10px 30px;
 }
+
+
+.episode-number {
+  display: inline-block;}
+
 footer {
   text-align: center;
+}
+
+#select-episode {
+  margin-bottom: 10px;
 }
