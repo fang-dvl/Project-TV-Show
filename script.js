@@ -47,6 +47,29 @@ function populateShowSelect(shows) {
   showSelect.addEventListener("change", handleShowChange);
 }
 
+function handleShowChange(event) {
+  const showId = event.target.value;
+  if (!showId) return;
+
+  if (episodeCache[showId]) {
+    setup(episodeCache[showId]);
+    return;
+  }
+
+  showLoading();
+
+  fetch(`https://api.tvmaze.com/shows/${showId}/episodes`)
+    .then(response => {
+      if (!response.ok) throw new Error("Failed to fetch episodes");
+      return response.json();
+    })
+    .then(episodes => {
+      episodeCache[showId] = episodes;
+      setup(episodes);
+    })
+    .catch(error => showError(error.message));
+}
+
 function setup(allEpisodes) {
   makePageForEpisodes(allEpisodes);
   const filter = document.getElementById('filter');
