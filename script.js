@@ -1,5 +1,9 @@
 //You can edit ALL of the code here
 const rootElem = document.getElementById("root");
+
+let showList = [];
+let episodeCache = {};
+
 function showLoading() {
   rootElem.innerHTML = "<p>Loading episodes, please wait...</p>";
 }
@@ -9,13 +13,60 @@ function showError(message) {
   rootElem.innerHTML = `<p style="color:red;">Error: ${message}</p>`;
 }
 
-fetch("https://api.tvmaze.com/shows/82/episodes").then(response=>{
-  if (!response.ok) {throw new Error("Network response was not OK");}
-  return response.json()}).then((allEpisodes)=>{
-  rootElem.innerHTML = "";
-  setup(allEpisodes)
-}).catch(error => {
-    showError(error.message);})
+fetch("https://api.tvmaze.com/shows")
+   .then(response => {
+     if (!response.ok) throw new Error("Failed to fetch shows");
+     return response.json();
+   })
+   .then(data => {
+     showList = data;
+     populateShowSelect(showList);
+   })
+   .catch(error => showError(error.message));
+
+function populateShowSelect(shows) {
+  const showSelect = document.getElementById("select-show");
+
+  shows.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+
+  for (let show of shows) {
+    const option = document.createElement("option");
+    option.value = show.id;
+    option.textContent = show.name;
+    showSelect.append(option);
+  }
+
+  showSelect.addEventListener("change", handleShowChange);
+}
+
+function handleShowChange(event) {
+  const showId = event.target.value;
+  if (!showId) return;
+
+  const searchInput = document.getElementById('search');
+  searchInput.value = '';
+
+  const selectEpisode = document.getElementById('select-episode');
+  selectEpisode.innerHTML = '<option value="Select">Select Episode...</option>';
+
+  if (episodeCache[showId]) {
+    setup(episodeCache[showId]);
+    return;
+  }
+
+  showLoading();
+
+  fetch(`https://api.tvmaze.com/shows/${showId}/episodes`)
+    .then(response => {
+      if (!response.ok) throw new Error("Failed to fetch episodes");
+      return response.json();
+    })
+    .then(episodes => {
+      episodeCache[showId] = episodes;
+      setup(episodes);
+    })
+    .catch(error => showError(error.message));
+}
 
 function setup(allEpisodes) {
   makePageForEpisodes(allEpisodes);
