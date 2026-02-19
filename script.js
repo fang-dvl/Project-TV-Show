@@ -43,7 +43,6 @@ function handleShowChange(event) {
   const showId = event.target.value;
   if (!showId) return;
 
-
   const searchInput = document.getElementById('search');
   searchInput.value = '';
 
