@@ -13,14 +13,6 @@ function showError(message) {
   rootElem.innerHTML = `<p style="color:red;">Error: ${message}</p>`;
 }
 
-fetch("https://api.tvmaze.com/shows/82/episodes").then(response=>{
-  if (!response.ok) {throw new Error("Network response was not OK");}
-  return response.json()}).then((allEpisodes)=>{
-  rootElem.innerHTML = "";
-  setup(allEpisodes)
-}).catch(error => {
-    showError(error.message);})
-
 fetch("https://api.tvmaze.com/shows")
    .then(response => {
      if (!response.ok) throw new Error("Failed to fetch shows");
@@ -50,6 +42,13 @@ function populateShowSelect(shows) {
 function handleShowChange(event) {
   const showId = event.target.value;
   if (!showId) return;
+
+
+  const searchInput = document.getElementById('search');
+  searchInput.value = '';
+
+  const selectEpisode = document.getElementById('select-episode');
+  selectEpisode.innerHTML = '<option value="Select">Select Episode...</option>';
 
   if (episodeCache[showId]) {
     setup(episodeCache[showId]);
