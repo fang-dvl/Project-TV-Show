@@ -1,5 +1,9 @@
 //You can edit ALL of the code here
 const rootElem = document.getElementById("root");
+
+let showList = [];
+let episodeCache = {};
+
 function showLoading() {
   rootElem.innerHTML = "<p>Loading episodes, please wait...</p>";
 }
@@ -16,6 +20,17 @@ fetch("https://api.tvmaze.com/shows/82/episodes").then(response=>{
   setup(allEpisodes)
 }).catch(error => {
     showError(error.message);})
+
+fetch("https://api.tvmaze.com/shows")
+   .then(response => {
+     if (!response.ok) throw new Error("Failed to fetch shows");
+     return response.json();
+   })
+   .then(data => {
+     showList = data;
+     populateShowSelect(showList);
+   })
+   .catch(error => showError(error.message));
 
 function setup(allEpisodes) {
   makePageForEpisodes(allEpisodes);
