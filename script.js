@@ -32,6 +32,21 @@ fetch("https://api.tvmaze.com/shows")
    })
    .catch(error => showError(error.message));
 
+function populateShowSelect(shows) {
+  const showSelect = document.getElementById("select-show");
+
+  shows.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+
+  for (let show of shows) {
+    const option = document.createElement("option");
+    option.value = show.id;
+    option.textContent = show.name;
+    showSelect.append(option);
+  }
+
+  showSelect.addEventListener("change", handleShowChange);
+}
+
 function setup(allEpisodes) {
   makePageForEpisodes(allEpisodes);
   const filter = document.getElementById('filter');
