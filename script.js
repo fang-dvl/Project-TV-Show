@@ -1,4 +1,3 @@
-//You can edit ALL of the code here
 
 const rootElem = document.getElementById("root");
 const filterShows = document.querySelector(".searchShow");
@@ -111,7 +110,7 @@ function selectShowList(showList) {
       selectAnEpisode(episodeList);
       searchAnEpisode(episodeList);
       goBackToShowList();
-  });
+    });});
 }
 
 function makePageForEpisodes(episodeList) {
