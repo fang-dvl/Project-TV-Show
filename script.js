@@ -41,7 +41,8 @@ function createShowElements() {
      
       <select name="selectAShow" id="selectAShow">
         <option value="Select">Select a show...</option>
-      </select>`;
+      </select>
+      <p id="showNum">Found ${allShows.length} shows</p>`;
   const showContainer = document.createElement("div");
   showContainer.classList.add("showContainer");
   showPage.append(searchShow,showContainer);
@@ -103,8 +104,10 @@ function searchShowList(showList) {
 let showUrl = [];
 const epNum = document.createElement("p");
 episodeBar.append(epNum);
-const selectAShow = document.querySelector("#selectAShow");
+
 function selectShowList(showList) {
+  const selectAShow = document.querySelector("#selectAShow");
+  selectAShow.innerHTML = `<option value="" disabled selected>Select a show...</option>`;
   showList.sort((a, b) =>
     a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
   );
@@ -119,6 +122,7 @@ function selectShowList(showList) {
 
   selectAShow.addEventListener("change", (event) => {
     showPage.innerHTML = "";
+    episodeBar.innerHTML = ""; 
     const index = Number(event.target.value);
     getData(showUrl[index]).then((episodeList) => {
       makePageForEpisodes(episodeList);
@@ -167,6 +171,8 @@ function goBackToShowList() {
     createShowElements();
     setup();
     console.log("Go back to show list");
+    searchAnEpisode(allShows);
+    selectAnEpisode(allShows);
   });
 }
 
