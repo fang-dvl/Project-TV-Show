@@ -6,7 +6,6 @@ const showNum = document.createElement("p");
 showNum.classList.add("searchShow");
 filterShows.append(showNum);
 const selectEpisode = document.getElementById("select-episode");
-const showContainer = document.querySelector(".showContainer");
 const episodeBar = document.querySelector("#episodeBar");
 
 //fetch data from url
@@ -33,8 +32,24 @@ function setup() {
   });
 }
 
+function createShowElements() {
+  const searchShow=document.createElement("div");
+  searchShow.classList.add("searchShow");
+  searchShow.innerHTML=` 
+       <label for="searchAShow">Filtering for</label>
+       <input type="text" id="searchAShow">
+     
+      <select name="selectAShow" id="selectAShow">
+        <option value="Select">Select a show...</option>
+      </select>`;
+  const showContainer = document.createElement("div");
+  showContainer.classList.add("showContainer");
+  showPage.append(searchShow,showContainer);
+}
+
 //create show cards for show list page
 function makePageForShows(showList) {
+  const showContainer = document.querySelector(".showContainer");
   showNum.innerHTML = `Found ${showList.length} shows`;
   showContainer.innerHTML = "";
   showList.forEach((show) => {
@@ -147,6 +162,9 @@ function goBackToShowList() {
   episodeBar.append(backAllButton);
 
   backAllButton.addEventListener("click", () => {
+    episodeBar.innerHTML="";
+    rootElem.innerHTML="";
+    createShowElements();
     setup();
     console.log("Go back to show list");
   });
