@@ -8,6 +8,11 @@ filterShows.append(showNum);
 const selectEpisode = document.getElementById("select-episode");
 const episodeBar = document.querySelector("#episodeBar");
 
+const selectedShow=localStorage.getItem("selectedShow");
+console.log(selectedShow);
+const selectedEpisode=localStorage.getItem("selectedEpisode");
+console.log(selectedEpisode);
+
 //fetch data from url
 const getData = async (url) => {
   try {
@@ -24,13 +29,32 @@ const getData = async (url) => {
 //make a show list front page
 let allShows = [];
 function setup() {
+  if (selectedShow && !selectedEpisode) {
+    getData(selectedShow).then((episodeList) => {
+      showPage.innerHTML="";
+      makePageForEpisodes(episodeList);
+      selectAnEpisode(episodeList);
+      searchAnEpisode(episodeList);
+      goBackToShowList();
+    });
+  if (selectedEpisode) {
+    getData(selectedEpisode).then((allEpisodes)=>{
+      episodeBar.innerHTML="";
+      rootElem.innerHTML="";
+      makePageForEpisodes(allEpisodes);
+      selectAnEpisode(allEpisodes);
+      searchAnEpisode(allEpisodes);
+      showAll(allEpisodes);
+      goBackToShowList();
+    })}
+  } else {
   getData("https://api.tvmaze.com/shows").then((showList) => {
     makePageForShows(showList);
     searchShowList(showList);
     selectShowList(showList);
     allShows = showList;
   });
-}
+}}
 
 function createShowElements() {
   const searchShow=document.createElement("div");
@@ -101,7 +125,7 @@ function searchShowList(showList) {
 }
 
 //make a select bar for shows
-let showUrl = [];
+let showUrl = {};
 const epNum = document.createElement("p");
 episodeBar.append(epNum);
 
@@ -117,15 +141,16 @@ function selectShowList(showList) {
     option.value = show.id;
     selectAShow.append(option);
     const episodeUrl = `https://api.tvmaze.com/shows/${show.id}/episodes`;
-    showUrl.push(episodeUrl);
+    showUrl[show.id]=episodeUrl;
   });
 
   selectAShow.addEventListener("change", (event) => {
     showPage.innerHTML = "";
     episodeBar.innerHTML = ""; 
-    const index = Number(event.target.value);
-    getData(showUrl[index]).then((episodeList) => {
+    let showId = event.target.value;
+    getData(showUrl[showId]).then((episodeList) => {
       makePageForEpisodes(episodeList);
+      localStorage.setItem("selectedShow", showUrl[showId]);
       selectAnEpisode(episodeList);
       searchAnEpisode(episodeList);
       goBackToShowList();
@@ -144,7 +169,7 @@ function makePageForEpisodes(episodeList) {
     title.textContent = `${name}-S${season}E${number}`;
     title.classList.add("title");
     const image = document.createElement("img");
-    image.src = episodeList[i].image.medium;
+    image.src = episodeList[i].image?.medium || "https://dummyimage.com/210x295/cccccc/000000&text=No+Image";
     const summary = document.createElement("p");
     summary.innerHTML = episodeList[i].summary || "";
     summary.classList.add("summary");
@@ -169,10 +194,12 @@ function goBackToShowList() {
     episodeBar.innerHTML="";
     rootElem.innerHTML="";
     createShowElements();
+    localStorage.removeItem("selectedShow");
+    localStorage.removeItem("selectedEpisode");
     setup();
     console.log("Go back to show list");
-    searchAnEpisode(allShows);
-    selectAnEpisode(allShows);
+    // searchAnEpisode(allShows);
+    // selectAnEpisode(allShows);
   });
 }
 
@@ -221,11 +248,13 @@ function selectAnEpisode(allEpisodes) {
 
   selectEpisode.addEventListener("change", (event) => {
     const select = event.target.value;
-    const selectedEpisode = allEpisodes.filter(
+    const selectedEpisode = allEpisodes.find(
       (episode) => episode.name === select,
     );
+    const episodeUrl=selectedEpisode.url;
+    localStorage.setItem("selectedEpisode", episodeUrl);
     episodeBar.innerHTML = "";
-    makePageForEpisodes(selectedEpisode);
+    makePageForEpisodes([selectedEpisode]);
     selectAnEpisode(allEpisodes);
     searchAnEpisode(allEpisodes);
     showAll(allEpisodes);
@@ -249,6 +278,7 @@ function showAll(allEpisodes) {
     selectEp.selectedIndex = 0;
     const searchInput = document.querySelector("#search");
     searchInput.value = "";
+    localStorage.removeItem("selectedEpisode");
   });
 }
 window.onload = setup;
